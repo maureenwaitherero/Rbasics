@@ -1,6 +1,17 @@
 #Authur: Maureen Waitherero Wachira ;  
-#For: Crash Course on R Syntax
+#For: R-BASICS SERIES
 #Date: 3rd October 2016
+
+
+
+#******************Setting up working directory*****************************
+#***********************************************************
+
+# character indicates a comment
+
+getwd() # find current working directory
+
+setwd("~/Documents/R-Analytics") # set working directory
 
 
 #****************** Basic arithmetic in R****************************
@@ -47,8 +58,8 @@ log2(x)
 #structure in R.
 
 v1<-c(12,10.8,77,90.8)  #c() is to concatenate
-v2 <- rep("moh",time=4) #vector of repeated word 'moh'
-v3 <- rep(1:3,time=3)   #vector of repeated numbers 1-3 ,3 times also can be written as ;
+v2 <- rep("moh",time=4) #vector of repeated character 'moh' 4 times
+v3 <- rep(1:3,time=3)   #vector of repeated numbers 1-3 ,3 times also can be written as below ;
 v3 <- rep(c(1:3),3)
 v4<- rep(c("moh, stem"),time=2)
 
@@ -80,10 +91,11 @@ y <- c("a", TRUE)  ## character
 #Objects can be explicitly coerced from one class to another using the as.* functions
 x <- 0:6
 class(x)
-as.numeric(x)#coerce to numeric
-as.logical(x)
-as.character(x)
-as.complex(x)
+as.numeric(x)#coerce to numeric(real number)
+as.logical(x) #logical vector(True/False)
+as.character(x) #character vector
+as.complex(x) # complex vector
+as.integer(x)#coerce to integer
 
 #****************** Factors ****************************
 
@@ -92,26 +104,84 @@ as.complex(x)
 #This can be important in linear modelling because the first level is used as the baseline level. 
 #This feature can also be used to customize order in plots that include factors, since by default factors are plotted in the order of their levels.
 
-Gender <- factor(Gender,levels = c("male","female"))# set male as the first level/baseline.
+gender <-c("male","female","male","female","male","female")
+Gender <- factor(gender,levels = c("male","female"))# set male as the first level/baseline.
+unclass(Gender)
+
+#Factors in practice
+age<-rep(c(1,2),10)# create a vector age that repeats the combination 1,2 ten times.
+
+age<- as.factor(age) # change age class to a factor from numeric.
+
+str(age) # check structure of age. 
+
+marks <- c(20,33,45,47,48,36,57,61,15,89) # create a vector marks
+
+cut.points <- cut(marks, breaks =c(0,40,50,60,70,100))# create levels btwn 0-100
+
+levels(cut.points) <- c("E","D", "C","B","A") # label above levels
+
+table(cut.points) #summary of marks
+
+cut.points <-cut(marks, breaks =c(0,40,100))# create 2levels btwn 0-100 i.e 0-40 & 40-100
+
+levels(cut.points) <-c("Fail","Pass")
 
 
 #******************Missing values ****************************
 
 #Missing values are denoted by NA or NaN for undefined mathematical operations.
 
+#Testing for Missing Values
+is.nan(x) # return a logical vector indicating which elements are NaN
+is.na(x) # # return a logical vector indicating which elements are Na
+y <- c(1,2,3,NA)
+is.na(y) # returns a vector (F F F T)
 
+#Excluding Mising Values from Analyses
+y <- c(1,2,3,NA)
+mean(y) # returns NA
+mean(y, na.rm=TRUE) # returns 2
 
+# list rows of dataframe e.g mydata that have missing values 
+mydata<- data
+mydata[!complete.cases(mydata),]# list rows of dataframe e.g mydata that have missing values
+
+#na.omit() returns the object e.g dataframe with listwise deletion of missing values.
+newdata <- na.omit(mydata)# create new dataset without missing data 
 
 #******************create a matrix*****************************
+
 #Matrices are vectors with a dimension attribute. 
 #The dimension attribute is itself an integer vector of length 2 (number of rows, number of columns)
 
+#Matrices are constructed column-wise, so entries can be thought of 
+#starting in the “upper left”corner and running down the columns.
+v1<-c(12,10.8,77,90.8,4,6,7,8,5,2) 
+m <-matrix(v1,nrow = 2,ncol = 5)
 matrix1 <- matrix(v1, nrow=2,byrow=T)# create a matrix of v1 vector with two rows filled in rowise(byrow=T)
+
+dim(matrix1) # check dimesions of matrix1
+
+dim(matrix1) <- c(2, 5)# change dimension of matrix1
+
+#Matrices created by column-binding or row-binding with the cbind() and rbind() functions
+x1 <- 1:3
+y1 <- 10:12
+matrix2 <- cbind(x1, y1)
+matrix3 <- rbind(x1, y1)
+
+# ******* subsetting and extraction in a matrix *****
 matrix1[1,2] #extract element in row one column 2
 matrix1[c(1,2),2]#extract elements in row 1 column 2 and in row 2 column 2
 matrix1[,1] #extract column 0ne
 matrix1[2,]# extarct row two
 
+#***** manipulations *****
+
+matrixT <-t(matrix1);matrixT # matrix1 transpose
+matrixSQD <- matrixT%*%matrix1;matrixSQD # multiply two matrix i.e matrixT and matrix1
+matrixSQ <- solve(matrixSQD);matrixSQ # matrixSQD Inverse i.e use solve() to find inverse of a matrix
 
 #******************create a lists***************************
 
@@ -134,83 +204,5 @@ df<-data.frame(n,s,b) # created a dataframe df from vectors n,s and b.
 datamatrix <- data.matrix(data)
 
 
-# 14th OCTOBER 2016 
-#******************import dataset****************************
-
-data <- read.delim(file.choose(),header = TRUE) # import txt format dataset
-
-attach(data) # attach data make variables global variables
-
-detach(data) # detach data 
-
-dim(data) #check no. of rows and columns in our dataset
-
-id <- 1:725 #create object id that is a sequence from 1-725
-
-data <- cbind(id, data) # add a colunm id to initial data set(order matters)
-
-head(data) # veiw first 6 rows
-
-tail(data) # veiw last 6 rows
-
-Veiw(data) # veiw dataset
-
-names(data) # veiw column names of the dataset
-
-str(data) # check structure of the dataset
-
-colnames(data)<- c("lungcap", "age", "height", "smoke", "gender", "caesarean") # renaming column names
-
-mean(height) # mean of colunm height
-
-#******************subset data****************************
-data[2,5] # returns value in row 2 , column 5 
-
-data[2:5] #3 get colunms 2 throught 5 and all rows
-
-data[2:5, ] # get rows 2 through 5 and all columns
-
-data[ ,-1] -> data # remove first column and rename data set after
-
-#******************generate new variables ****************************
-
-y <- runif(725) #runif function generates real-values from the Uniform distribution
-
-z <- rnorm(725) #rnorm function here generates 725 normal random numbers
-
-logy <- log10(y) #log base 10 of y
-
-ln <- ln(y) # Create vector ln which is the natural log of y 
-
-lny <-log(y, base = exp(1)) # find what this means.....
-
-logheight<-log10(height)
-
-sqrtheight <- sqrt(height) 
-
-datax<-cbind(logy,z,data,y,logheight,sqrtheight) # cbind function inserts new column(s)
-
-#****************** export data*****************************
-write.table(datax, file ="irene.txt", append=F, sep="/t") # exported as datax.txt
-
-tapply(mwaka, gender, mean)# get the mean mwaka based on the gender(this variable is prefered to be a categorical variable)
-
-age<-rep(c(1,2),10)# create a vector age that repeats the combination 1,2 ten times.
-
-age<- as.factor(age) # change age class to a factor from numeric.
-
-str(age) # check structure of age. 
-
-marks <- c(20,33,45,47,48,36,57,61,15,89) # create a vector marks
-
-cut.points <- cut(marks, breaks =c(0,40,50,60,70,100))# create levels btwn 0-100
-
-levels(cut.points) <- c("E","D", "C","B","A") # label above levels
-
-table(cut.points) #summary of marks
-
-cut.points <-cut(marks, breaks =c(0,40,100))# create 2levels btwn 0-100 i.e 0-40 & 40-100
-
-levels(cut.points) <-c("Fail","Pass") 
-
-
+#HOPE YOU LEARNT ALOT NOW CHECK OUT THE NEXT SCRIPT TO LEARN
+#HOW TO IMPORT DATASETS IN DIFFERENT FORMATS AND ALSO EXPORT DATASETS:)
